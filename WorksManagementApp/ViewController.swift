@@ -21,13 +21,15 @@
 import UIKit
 import RealmSwift
 
+
+class Data: Object {
+    @objc dynamic var subject = ""
+    @objc dynamic var homeWork = ""
+    @objc dynamic var date = ""
+}
+
 class ViewController: UIViewController {
-    
-    class Data: Object {
-        @objc dynamic var subject = ""
-        @objc dynamic var homeWork = ""
-        @objc dynamic var date = ""
-    }
+
     
     @IBOutlet var subjectTextField: UITextField!
     @IBOutlet var dateTextField: UITextField!
@@ -43,7 +45,6 @@ class ViewController: UIViewController {
     
     let saveData = UserDefaults.standard
     let colorSaveData = UserDefaults.standard
-    let recordData = Data()
     
     
     
@@ -70,6 +71,7 @@ class ViewController: UIViewController {
             self.present(alart, animated: true, completion: nil)
             
                 }else{
+            let recordData = Data()
             recordData.subject = String(subjectTextField.text!)
             recordData.homeWork = String(homeWorkField.text!)
             recordData.date = String(dateTextField.text!)
@@ -105,6 +107,8 @@ class ViewController: UIViewController {
         datePicker.timeZone = NSTimeZone.local
         datePicker.locale = Locale.current
         dateTextField.inputView = datePicker
+        
+        realm = try! Realm()
         
         
         let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 35))

@@ -11,7 +11,6 @@ import UIKit
 class TableViewCell: UITableViewCell {
     
     @IBOutlet var subjectLabel: UILabel!
-    @IBOutlet var dateLabel: UILabel!
     @IBOutlet var homeWorkLabel: UILabel!
 
     override func awakeFromNib() {

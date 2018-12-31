@@ -11,12 +11,6 @@ import RealmSwift
 
 class ListTableViewController: UITableViewController {
     
-    class Data: Object {
-        @objc dynamic var subject = ""
-        @objc dynamic var homeWork = ""
-        @objc dynamic var date = ""
-    }
-    
     let saveData = UserDefaults.standard
     let colorSaveData = UserDefaults.standard
     let nowDate = Date()
@@ -32,15 +26,32 @@ class ListTableViewController: UITableViewController {
     var realm: Realm!
     
     @IBOutlet var table: UITableView!
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
         table.allowsSelectionDuringEditing = true
         
+//        let protectData = Data()
+//        protectData.subject = ""
+//        protectData.homeWork = ""
+//        protectData.date = ""
+//        try! realm.write {
+//            realm.add(protectData)
+//        }
+        
+//        allData = Array(realm.objects(Data.self))
+//        let gettingData = allData.map{($0.date)}
+//        let orderedSet = NSOrderedSet(array: gettingData)
+//        afterData = orderedSet.array as! [String]
+        
+        realm = try! Realm()
+        
         allData = Array(realm.objects(Data.self))
         let gettingData = allData.map{($0.date)}
         let orderedSet = NSOrderedSet(array: gettingData)
         afterData = orderedSet.array as! [String]
+        
         
         tableView.register(UINib(nibName: "TableViewCell", bundle: nil), forCellReuseIdentifier: "cell")
         // Uncomment the following line to preserve selection between presentations
@@ -55,7 +66,7 @@ class ListTableViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-
+        
         if colorSaveData.object(forKey: "COLOR") != nil {
             colorNumber = colorSaveData.object(forKey: "COLOR") as! Int
         }
@@ -78,9 +89,7 @@ class ListTableViewController: UITableViewController {
             break
         }
         
-        print(parentArray)
-        tableView.reloadData()
-        
+    tableView.reloadData()
     }
     
     override func didReceiveMemoryWarning() {
@@ -96,36 +105,35 @@ class ListTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return taskDictonary.count
+        return allData.count
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) ->  String?{
         
-        return (afterData as! String)
+        return afterData[section]
     }
 
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! TableViewCell
         
-        var AllData = Array(realm.objects(Data.self))
         
-        cell.subjectLabel.text = AllData[indexPath.row].subject
-        cell.dateLabel.text = AllData[indexPath.row].homeWork
+        cell.subjectLabel.text = allData[indexPath.row].subject
+        cell.homeWorkLabel.text = allData[indexPath.row].homeWork
 
         
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         let nowDate = Date()
-        let addedDate = formatter.date(from: AllData[indexPath.row].date)
+        let addedDate = formatter.date(from: allData[indexPath.row].date)
 
         
         if (nowDate.compare(addedDate!) == .orderedAscending) {
-            cell.dateLabel.textColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+            cell.homeWorkLabel.textColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
         }else if (nowDate.compare(addedDate!) == .orderedSame) {
-            cell.dateLabel.textColor = #colorLiteral(red: 1, green: 0, blue: 0, alpha: 1)
+            cell.homeWorkLabel.textColor = #colorLiteral(red: 1, green: 0, blue: 0, alpha: 1)
         }else if (nowDate.compare(addedDate!) == .orderedDescending) {
-            cell.dateLabel.textColor = #colorLiteral(red: 1, green: 0, blue: 0, alpha: 1)
+            cell.homeWorkLabel.textColor = #colorLiteral(red: 1, green: 0, blue: 0, alpha: 1)
         }
         return cell
     }
@@ -154,10 +162,8 @@ class ListTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath){
         if editingStyle == .delete{
-            
-            var AllData = Array(realm.objects(Data.self))
     
-            let deleteData = AllData.remove(at: indexPath.row)
+            let deleteData = allData.remove(at: indexPath.row)
             
                 try! realm.write() {
                     
